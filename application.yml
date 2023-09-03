@@ -1,0 +1,38 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    username: admin
+    password: admin
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/postgres}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        hbm2ddl:
+          auto: update
+        format_sql: false
+        show_sql: false
+
+
+
+# example values
+
+indexing-settings:
+  sites:
+#    - url: https://www.svetlovka.ru/
+#      name: Svetlovka
+#    - url: https://radiomv.ru/
+#      name: Fm
+#    - url: https://www.pleer.ru/
+#      name: Pleer
+#    - url: https://oncomos.ru/
+#      name: ONCOMOS
+    - url: https://mn-medical.ee/
+      name: MN_MedicalEE
+    - url: https://mnmedical.ru/
+      name: MN
+
+
+
+
