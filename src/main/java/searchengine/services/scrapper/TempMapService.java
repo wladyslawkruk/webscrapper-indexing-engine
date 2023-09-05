@@ -44,7 +44,8 @@ public class TempMapService {
                     le = new LemmaEntity(siteEntity,entry.getKey(),1);
                     lemmaMap.put(entry.getKey(),le);
                 }
-                indexMap.add(new IndexEntity(page,le,entry.getValue().floatValue()));
+                 indexMap.add(new IndexEntity(page,le,entry.getValue().floatValue()));
+
             }
         }
 

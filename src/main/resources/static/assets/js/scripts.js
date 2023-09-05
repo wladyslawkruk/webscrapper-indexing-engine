@@ -1492,7 +1492,7 @@ var API = function(){
                     }
                 } else {
                     if ($this.next('.API-error').length) {
-                        $this.next('.API-error').text(result.error);
+                       $this.next('.API-error').text(result.error);
                     } else {
                         $this.after('<div class="API-error">' + result.error + '</div>');
                     }

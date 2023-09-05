@@ -20,20 +20,22 @@ spring:
 
 indexing-settings:
   sites:
-#    - url: https://fbk.info/
-#      name: FBK
-#    - url: https://www.ng.ru/
-#      name: NG
-#    - url: https://meduza.io/
-#      name: Meduza
-#    - url: https://www.pleer.ru/
-#      name: Pleer
-    - url: https://oncomos.ru/
-      name: ONCOMOS
-    - url: https://mn-medical.ee/
-      name: MN_MedicalEE
-    - url: https://mnmedical.ru/
-      name: MN
+    - url: https://www.svetlovka.ru/
+      name: library
+    - url: https://ipfran.ru/
+      name: institute
+    - url: https://www.lutherancathedral.ru/
+      name: cathedral
+#    - url: https://www.smclinic.ru/
+#      name: SMCLINIC
+#    - url: https://oncomos.ru/
+#      name: ONCOMOS
+#    - url: https://www.emcmos.ru/
+#      name: EMC
+#    - url: https://mn-medical.ee/
+#      name: MN_MedicalEE
+#    - url: https://mnmedical.ru/
+#      name: MN
 
 
 

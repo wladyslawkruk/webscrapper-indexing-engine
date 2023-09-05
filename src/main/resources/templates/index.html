@@ -36,15 +36,6 @@
 
 </head>
 <body class="Site">
-<!--if lt IE 8
-p.error-browser
-    | Ваш браузер&nbsp;
-    em устарел!&nbsp;
-    a(href="http://browsehappy.com/") Выберите новую версию
-        +s
-        | браузера здесь&nbsp;
-    | для правильного отображения сайта.
--->
 <div class="Site-loader">
   <div class="Site-loader-block">
     <div>
@@ -106,23 +97,28 @@ p.error-browser
               <div>
                 <button class="btn btn_primary API-startIndexing" data-btntype="check" data-check="false" data-send="startIndexing"><span class="btn-content">Start indexing</span>
                 </button>
-                <button class="btn btn_primary API-stopIndexing" data-btntype="check" data-check="false" data-send="stopIndexing"><span class="btn-content">Stop indexing</span>
+              </div><br>
+              <div>
+                <button class="btn btn_primary API-stopIndexing" data-btntype="check" data-check="false" data-send="stopIndexing"><span class="btn-content">Stop indexing_</span>
                 </button>
               </div><br>
-              <br>
-              <div class="UpdatePageBlock">
-                <h3>Add/update page:
-                </h3>
-                <form class="form form_close" action="#" method="post" data-send="indexPage">
-                  <div class="form-group form-group_row">
-                    <input class="form-input" id="page" name="page" type="text"/>
-                    <button class="btn btn_primary form-btn" type="submit">Add/update
-                    </button>
-                  </div>
-                </form>
+              <div class="3rdBl">
+                <div class="UpdatePageBlock">
+                  <h3>Add/update page:
+                  </h3>
+                  <form class="form form_close" action="#" method="post" data-send="indexPage">
+                    <div class="form-group form-group_row">
+                      <input class="form-input" id="page" name="page" type="text"/>
+                      <button class="btn btn_primary form-btn" type="submit">Add/update
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
+
             </div>
           </div>
+
           <div class="Tabs-block" id="search">
             <div class="Section">
               <div class="Section-header">

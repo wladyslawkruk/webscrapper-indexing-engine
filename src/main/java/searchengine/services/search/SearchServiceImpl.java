@@ -27,24 +27,16 @@ public class SearchServiceImpl implements SearchService{
 
     @Override
     public SearchResponse search(SearchRequest sq) throws IncorrectQueryException {
-        System.out.println("Search started");
-//        if(sq.getSite()==null){
-//
-//        }
         SearchResponse searchResponse = new SearchResponse();
         SiteEntity se = null;
         if(sq.getSite()!=null){
             if(dbService.getSiteEntityByRootUrl(sq.getSite()).isEmpty()){
-              //  throw new IncorrectQueryException("Wrong website");
                 return new SearchResponse(false,"Nie przeprowadzono indeksacji tej strony webowej");
             }
             se = dbService.getSiteEntityByRootUrl(sq.getSite()).get();
         }
-//        int siteId = sq.getSite()!=null?dbService.getSiteEntityByRootUrl(sq.getSite()).get().getSiteId()
-//                :0;
         Integer siteId = se==null?0:se.getSiteId();
         System.out.println(siteId);
-        System.out.println("haha");
         Set<String> lemmasFromQuery = null;
         try {
             lemmasFromQuery = LemmaFinder.getInstance().collectLemmas(sq.getQuery()).keySet();  //get lemmas out of user Query
@@ -52,9 +44,6 @@ public class SearchServiceImpl implements SearchService{
             Map<String,Set<Integer>> lemmaMap = getFilteredPagesByRareLemma(uniqueLemmasSorted,siteId);//карта лемма-списки со страницами
             Set<Integer> pageIdFiltered = getDemandedPagesSet(lemmaMap);
             Map<Integer, Float> relevantPages = getPagesWithRelevance(pageIdFiltered,uniqueLemmasSorted);
-            for (Map.Entry<Integer, Float> entry : relevantPages.entrySet()) {
-                System.out.println(entry.getKey() + ":" + entry.getValue());
-            }
             List<DataResponse> dataResponses = getDataResponses(relevantPages, se, uniqueLemmasSorted, sq.getOffset(), sq.getLimit())
                     .stream()
                     .sorted(DataResponse::compareByRelevance).toList();
