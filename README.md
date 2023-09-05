@@ -31,7 +31,7 @@ Your container ID also presents the hostname in the container settings.
 
 ## Run app
 
-Now you can run application services from your IDE. It can be accessed at 
+Now you can run application from your IDE. It can be accessed at 
 http://localhost:8080/
 
 
