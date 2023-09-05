@@ -7,8 +7,6 @@ import searchengine.sitenode.SiteNode;
 
 public interface ConnectionHandler {
     SiteResponse getSiteDoc(String path);
-
     PageResponse getDoc(SiteNode node);
-
     PageResponse getDocFromSingleUrl(String url);
 }

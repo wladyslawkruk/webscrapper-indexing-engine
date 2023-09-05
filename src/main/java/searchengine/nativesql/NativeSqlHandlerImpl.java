@@ -37,11 +37,8 @@ public class NativeSqlHandlerImpl implements NativeSqlHandler{
         try{
             tx = session.beginTransaction();
             String sql = String.format("TRUNCATE site RESTART IDENTITY CASCADE;TRUNCATE page RESTART IDENTITY CASCADE");
-
             session.createSQLQuery(sql).executeUpdate();
             tx.commit();
-            // System.out.println(se.getName()+" has been deleted");
-
         } catch (HibernateException hex) {
             if (tx != null) {
                 tx.rollback();
@@ -52,16 +49,4 @@ public class NativeSqlHandlerImpl implements NativeSqlHandler{
             session.close();
         }
     }
-
-//    @Override
-//    public Float getAbsRankForPage(Integer pageId, String query) {
-//        entityManager=entityManagerFactory.createEntityManager();
-//        Query sqlquery = entityManager
-//                .createNativeQuery("SELECT SUM(rank) FROM index i JOIN lemma l ON l.lemma_id = i.lemma_id WHERE page_id=:id AND lemma_word IN("+query+")");
-//        sqlquery.setParameter("id", 1);
-//        if(sqlquery.getSingleResult()==null){
-//            return 0f;
-//        }
-//        return ((Number) sqlquery.getSingleResult()).floatValue();
-//    }
 }

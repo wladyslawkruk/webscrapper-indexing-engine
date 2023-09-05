@@ -20,23 +20,19 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api")
 public class ApiController {
-
     private final StatisticsService statisticsService;
     private final ScrapperService scrapperService;
     private final SearchService searchService;
-
     @Autowired
     public ApiController(StatisticsService statisticsService, ScrapperService scrapperService, SearchService searchService) {
         this.statisticsService = statisticsService;
         this.scrapperService = scrapperService;
         this.searchService = searchService;
     }
-
     @GetMapping("/statistics")
     public ResponseEntity<StatisticsResponse> statistics() {
         return ResponseEntity.ok(statisticsService.getStatistics());
     }
-
     @GetMapping("/startIndexing")
     public ResponseEntity<ScrapperResponse> startIndexing(Model model) {
         return ResponseEntity.ok(scrapperService.indexing());
@@ -45,7 +41,6 @@ public class ApiController {
     public ResponseEntity<ScrapperResponse> stopIndexing(){
         return ResponseEntity.ok(scrapperService.stop());
     }
-
     @GetMapping("/search")
     public ResponseEntity<SearchResponse> search(@RequestParam("query")String query, @RequestParam(value = "site", required = false) String site,
                                                  @RequestParam(value = "offset", required = false) Integer offset
@@ -53,7 +48,6 @@ public class ApiController {
 
         return ResponseEntity.ok(searchService.search(new SearchRequest(query,site,offset,limit)));
     }
-
     @PostMapping("/indexPage")
     public ResponseEntity<ScrapperResponse> indexPage(@RequestParam String url){
         return ResponseEntity.ok(scrapperService.addPage(url));

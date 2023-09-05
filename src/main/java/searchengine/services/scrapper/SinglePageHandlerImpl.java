@@ -41,7 +41,6 @@ public class SinglePageHandlerImpl implements SinglePageHandler{
                 runIndex(url,s.getUrl());
                 return new ScrapperResponse(true, null);
             }
-
         }
         return new ScrapperResponse(false, Error.PAGE_DOES_NOT_BELONG_TO_ANY_SITE);
     }
@@ -63,10 +62,7 @@ public class SinglePageHandlerImpl implements SinglePageHandler{
             return;
         }
         dbService.savePageFromDocument(pr,se);
-
         dbService.updateTime(se);
-
-
         }
 
 

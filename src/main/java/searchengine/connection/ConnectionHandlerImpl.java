@@ -33,7 +33,6 @@ public class ConnectionHandlerImpl implements ConnectionHandler{
             return siteResponse;
         }
         siteResponse.setDocument(document);
-
         return siteResponse;
     }
 
@@ -42,7 +41,6 @@ public class ConnectionHandlerImpl implements ConnectionHandler{
         PageResponse pageResponse;
         Document document;
         Connection connection;
-
         try{
             connection = Jsoup.connect(node.getUrl()).maxBodySize(0)
                     .userAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
@@ -72,7 +70,6 @@ public class ConnectionHandlerImpl implements ConnectionHandler{
                     null,
                     node,
                     ex
-
             );
         }
         catch (IOException e) {
@@ -84,7 +81,6 @@ public class ConnectionHandlerImpl implements ConnectionHandler{
                     e
             );
         }
-
         return pageResponse;
     }
 
@@ -93,7 +89,6 @@ public class ConnectionHandlerImpl implements ConnectionHandler{
         PageResponse pageResponse;
         Document document;
         Connection connection;
-
         try{
             connection = Jsoup.connect(url).maxBodySize(0)
                     .userAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
@@ -123,7 +118,6 @@ public class ConnectionHandlerImpl implements ConnectionHandler{
                     null,
                     null,
                     ex
-
             );
         }
         catch (IOException e) {
@@ -135,7 +129,6 @@ public class ConnectionHandlerImpl implements ConnectionHandler{
                     e
             );
         }
-
         return pageResponse;
     }
 

@@ -26,8 +26,6 @@ public class DbServiceImpl implements DbService{
     private final LemmaRepository lemmaRepository;
     private final IndexRepository indexRepository;
     private final NativeSqlHandler nativeSqlHandler;
-
-
     @Autowired
     public DbServiceImpl(SiteRepository siteRepository, PageRepository pageRepository, LemmaRepository lemmaRepository, IndexRepository indexRepository, NativeSqlHandler nativeSqlHandler) {
         this.siteRepository = siteRepository;
@@ -37,7 +35,6 @@ public class DbServiceImpl implements DbService{
 
         this.nativeSqlHandler = nativeSqlHandler;
     }
-
     @Override
     public void setSiteStatusIndexed(String siteUrl) {
         if(siteRepository.findByUrl(siteUrl).isPresent()){
@@ -46,7 +43,6 @@ public class DbServiceImpl implements DbService{
             se.setStatus(SiteStatus.INDEXED);
             siteRepository.save(se);
         }
-
     }
 
     @Override
@@ -59,7 +55,6 @@ public class DbServiceImpl implements DbService{
         SiteEntity se= siteRepository.findByUrl(node.getRootElement().getUrl()).orElse(null);
         return Optional.of(se);
     }
-
     @Override
     public void updateTime(SiteNode node) {
         if(siteRepository.findByUrl(node.getRootElement().getUrl()).isPresent()){
@@ -75,8 +70,6 @@ public class DbServiceImpl implements DbService{
             se.setStatusTime(LocalDateTime.now());
             siteRepository.save(se);
         }
-
-
     @Override
     public void setLastError(String root, String error) {
         if(siteRepository.findByUrl(root).isPresent()){
@@ -85,7 +78,6 @@ public class DbServiceImpl implements DbService{
             siteRepository.save(se);
         }
     }
-
     @Override
     public void savePageWithError(PageResponse pageResponse, SiteEntity siteEntity) {
         pageRepository.save(new PageEntity(
@@ -136,7 +128,6 @@ public class DbServiceImpl implements DbService{
 
     }
 
-
     @Override
     public void saveLemmaToDb(LemmaEntity lemmaEntity) {
         lemmaRepository.saveAndFlush(lemmaEntity);
@@ -147,7 +138,6 @@ public class DbServiceImpl implements DbService{
         indexRepository.saveAndFlush(indexEntity);
 
     }
-
     @Override
     public void saveAllIndexesToDb(Set<IndexEntity> indexMap) {
         indexRepository.saveAllAndFlush(indexMap);
@@ -157,7 +147,6 @@ public class DbServiceImpl implements DbService{
     public void saveAllLemmasToDb(Map<String, LemmaEntity> lemmaMap) {
         lemmaRepository.saveAllAndFlush(lemmaMap.values());
     }
-
     @Override
     public void setFailedAfterCancellation(List<Site> siteList) {
         System.out.println("Setting FAILED STATUS");
@@ -173,9 +162,6 @@ public class DbServiceImpl implements DbService{
 
         }
     }
-
-
-
     @Override
     public Optional<SiteEntity> getSiteEntityByRootUrl(String root) {
         return siteRepository.findByUrl(root);
@@ -185,82 +171,55 @@ public class DbServiceImpl implements DbService{
     public Integer totalFrequencyOfLemma(String sorterLemmas) {
         return lemmaRepository.totalFrequencyOfLemma(sorterLemmas);
     }
-
     @Override
     public Set<Integer> findPagesForLemma(String lemma, Integer siteId) {
         return siteId == 0?  lemmaRepository.findPagesForLemmaOnAllSites(lemma)
                 : lemmaRepository.findPagesForLemmaOnSingleSite(lemma, siteId);
     }
-
     @Override
     public Float getRankOfLemmaByWordAndPage(String lemma, Integer pageId) {
         return indexRepository.getRankOfLemmaByWordAndPage(lemma,pageId);
     }
-
     @Override
     public Optional<PageEntity> getPageEntityByPageId(Integer pageId) {
         return pageRepository.findById(pageId);
     }
-
     @Override
     public Optional<SiteEntity> getSiteEntityBySiteId(Integer siteId) {
         return siteRepository.findById(siteId);
     }
-
     @Override
     public Integer countSites() {
         return siteRepository.countSites();
     }
-
     @Override
     public Integer countSitePages(String root) {
         return siteRepository.countSitePages(root);
     }
-
     @Override
     public Integer countAllPages() {
         return siteRepository.countAllPages();
     }
-
     @Override
     public Integer countLemmaBySite(String root) {
         return lemmaRepository.countLemmaBySite(root);
     }
-
     @Override
     public String getSiteStatus(String root) {
         return siteRepository.getSiteStatus(root);
     }
-
     @Override
     public String getLastError(String root) {
         return siteRepository.getLastError(root);
     }
-
     @Override
     public LocalDateTime getStatusTime(String root) {
         return siteRepository.getStatusTime(root);
     }
-
     @Override
     public PageEntity getPageEntityByPathAndSiteEntity(String path, SiteEntity se) {
         return pageRepository.getPageEntityByPathAndSiteEntity(path,se);
     }
-
-
-//    @Override
-//    public Float getAbsRankForPage(Integer pageId, Set<String> sortedSetLemmas) {
-//        StringBuilder query = new StringBuilder();
-//        for(String s:sortedSetLemmas){
-//            query.append(appendQuote(s));
-//        }
-//        query.deleteCharAt(query.length()-1);
-//        System.out.println(query);
-//        Float result = nativeSqlHandler.getAbsRankForPage(pageId,query.toString());
-//        System.out.println(result);
-//        return result==null?0:result;
-//    }
-
     public String appendQuote(String s) {
         return new StringBuilder()
                 .append('\'')

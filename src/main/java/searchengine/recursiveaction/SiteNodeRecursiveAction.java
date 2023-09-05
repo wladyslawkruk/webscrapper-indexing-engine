@@ -25,16 +25,11 @@ public class SiteNodeRecursiveAction extends RecursiveAction {
 
     }
     protected void compute() {
-
-        //  Thread.sleep(4000);
-
         try {
             Thread.sleep((int) ((Math.random() * (4000 - 150)) + 150));
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
-
         Set<SiteNodeRecursiveAction> taskSet = new HashSet<>();
         PageResponse pageResponse = siteNodeHandler.handlePage(node,tempMap);
         if(pageResponse!=null){

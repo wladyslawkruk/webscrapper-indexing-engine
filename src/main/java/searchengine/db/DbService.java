@@ -18,12 +18,8 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface DbService {
-
-
-
     void setSiteStatusIndexed(String siteUrl);   //set INDEXED status
     void saveToSiteDb(SiteEntity siteEntity);   //save to Site table
-
     Optional<SiteEntity> getSiteEntity (SiteNode node);  // get SiteEntity knowing its node
     void updateTime(SiteNode node); // update time
     void updateTime(SiteEntity se);
@@ -32,13 +28,11 @@ public interface DbService {
 
     void savePageFromDocument(PageResponse pageResponse, SiteEntity siteEntity, TempMapService tempMap);// regular page save
     void savePageFromDocument(PageResponse pageResponse, SiteEntity siteEntity);  //for a single page
-
     void saveLemmaToDb(LemmaEntity lemmaEntity);  //save lemma
     void saveIndexToDb(IndexEntity indexEntity); //save index
     void saveAllIndexesToDb(Set<IndexEntity> indexMap);
     void saveAllLemmasToDb(Map<String, LemmaEntity> lemmaMap);
     void setFailedAfterCancellation(List<Site> siteList);
-
     Optional<SiteEntity> getSiteEntityByRootUrl(String root);
 
     Integer totalFrequencyOfLemma (String sorterLemmas);
@@ -47,16 +41,12 @@ public interface DbService {
    // Float getAbsRankForPage(Integer pageId,Set<String> sortedSetLemmas);
     Optional<PageEntity> getPageEntityByPageId(Integer pageId);
     Optional<SiteEntity> getSiteEntityBySiteId(Integer siteId);
-
     Integer countSites();
     Integer countSitePages(String root);
     Integer countAllPages();
-
     Integer countLemmaBySite(String root);
-
     String getSiteStatus(String root);
     String getLastError(String root);
-
     LocalDateTime getStatusTime(String root);
     PageEntity getPageEntityByPathAndSiteEntity(String path, SiteEntity se);
 

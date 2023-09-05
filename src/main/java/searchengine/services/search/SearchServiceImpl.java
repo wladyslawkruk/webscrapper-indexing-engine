@@ -27,20 +27,24 @@ public class SearchServiceImpl implements SearchService{
 
     @Override
     public SearchResponse search(SearchRequest sq) throws IncorrectQueryException {
-
-        if(sq.getSite()==null){
-            return new SearchResponse(false);
-        }
+        System.out.println("Search started");
+//        if(sq.getSite()==null){
+//
+//        }
         SearchResponse searchResponse = new SearchResponse();
         SiteEntity se = null;
         if(sq.getSite()!=null){
             if(dbService.getSiteEntityByRootUrl(sq.getSite()).isEmpty()){
-                throw new IncorrectQueryException("Wrong website");
+              //  throw new IncorrectQueryException("Wrong website");
+                return new SearchResponse(false,"Nie przeprowadzono indeksacji tej strony webowej");
             }
             se = dbService.getSiteEntityByRootUrl(sq.getSite()).get();
         }
-        int siteId = sq.getSite()!=null?dbService.getSiteEntityByRootUrl(sq.getSite()).get().getSiteId()
-                :0;
+//        int siteId = sq.getSite()!=null?dbService.getSiteEntityByRootUrl(sq.getSite()).get().getSiteId()
+//                :0;
+        Integer siteId = se==null?0:se.getSiteId();
+        System.out.println(siteId);
+        System.out.println("haha");
         Set<String> lemmasFromQuery = null;
         try {
             lemmasFromQuery = LemmaFinder.getInstance().collectLemmas(sq.getQuery()).keySet();  //get lemmas out of user Query
@@ -51,7 +55,6 @@ public class SearchServiceImpl implements SearchService{
             for (Map.Entry<Integer, Float> entry : relevantPages.entrySet()) {
                 System.out.println(entry.getKey() + ":" + entry.getValue());
             }
-
             List<DataResponse> dataResponses = getDataResponses(relevantPages, se, uniqueLemmasSorted, sq.getOffset(), sq.getLimit())
                     .stream()
                     .sorted(DataResponse::compareByRelevance).toList();
@@ -70,12 +73,9 @@ public class SearchServiceImpl implements SearchService{
             float pageRank = 0f;
             for(String s:sortedSetLemmas){
                 pageRank+=dbService.getRankOfLemmaByWordAndPage(s,i)==null?0:dbService.getRankOfLemmaByWordAndPage(s,i);
-                //получаем rank всех лемм на странице, складываем
-
             }
             relevanceAbsolutPages.put(i,pageRank);
             maxRelevance = pageRank > maxRelevance ? pageRank : maxRelevance;
-
         }
         float finalMaxRelevance = maxRelevance;
         return relevanceAbsolutPages.entrySet().stream()
@@ -148,9 +148,6 @@ public class SearchServiceImpl implements SearchService{
         return responseList;
     }
 
-
-
-
     private Set<Integer> getDemandedPagesSet(Map<String,Set<Integer>> result){
         Set<Integer> resultSet = new HashSet<>();
         for(Set<Integer> pages : result.values()){
@@ -186,12 +183,11 @@ public class SearchServiceImpl implements SearchService{
             stop = stop == -1?
                     (Math.min(stopCustom, input.length()))
                     : (Math.min(stop, (stopCustom)));
-
             String result = input.substring(numberFirstWord, stop);
 
             for (String word : cutWords) {
                 countMatchesSearchWords += StringUtils.countMatches(result, word);
-                result = result.replaceAll(word,"<b>" + word + "<b>");
+                result = result.replaceAll(word,"<b>" + word + "</b>");
             }
             snippetsOnPage.put(result, countMatchesSearchWords);
             startSearch = stop;

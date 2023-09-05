@@ -24,15 +24,12 @@ public class TempMapService {
     private final DbService dbService;
 
     public TempMapService(DbService dbService) {
-
         this.dbService = dbService;
     }
 
     public void getMapOfLemmas(PageEntity page, String text, SiteEntity siteEntity) {
         try {
-          //  System.out.print(".");
             Map<String, Integer> lemmasFrequencyOnPage = LemmaFinder.getInstance().collectLemmas(text);
-
             for (Map.Entry<String, Integer> entry : lemmasFrequencyOnPage.entrySet()) {
                 LemmaEntity le;
                 if(lemmaWords.containsKey(entry.getKey())){
@@ -48,35 +45,21 @@ public class TempMapService {
                     lemmaMap.put(entry.getKey(),le);
                 }
                 indexMap.add(new IndexEntity(page,le,entry.getValue().floatValue()));
-
-
             }
-
         }
-        //  result.merge(entry.getKey(), 1, Integer::sum);
 
         catch (IOException e) {
             throw new RuntimeException(e);
         }
-     //   System.out.println("Lemma map size of "+siteEntity.getName()+": "+getLemmaMapSize());
-
-       // System.out.println("Index map size of "+siteEntity.getName()+": "+getIndexMapSize());
     }
 
 
     public void writeMapDownToDb(SiteEntity siteEntity) {
-//        for (Map.Entry<String, LemmaEntity> entry : lemmaMap.entrySet()){
-//            dbService.saveLemmaToDb(entry.getValue());
-//        }
         dbService.saveAllLemmasToDb(lemmaMap);
     }
 
 
     public void writeMapDownToIndexDb() {
-//        for (IndexEntity ie:indexMap){
-//            dbService.saveIndexToDb(ie);
-//
-//        }
         dbService.saveAllIndexesToDb(indexMap);
     }
 

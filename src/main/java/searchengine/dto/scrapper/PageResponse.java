@@ -8,12 +8,8 @@ import searchengine.sitenode.SiteNode;
 @AllArgsConstructor
 public class PageResponse {
     private int code;
-
     private String path;
-
     private Document document;
-
     private SiteNode node;
-
     private Exception exception;
 }

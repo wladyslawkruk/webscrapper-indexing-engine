@@ -10,9 +10,6 @@ import org.jsoup.nodes.Document;
 @NoArgsConstructor
 public class SiteResponse {
     private int code;
-
     private Document document;
-
-
     private Exception exception;
 }

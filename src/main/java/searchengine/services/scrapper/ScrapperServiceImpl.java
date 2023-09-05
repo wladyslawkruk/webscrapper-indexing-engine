@@ -58,10 +58,7 @@ public class ScrapperServiceImpl implements ScrapperService{
         else{
             start(startTime);
             return new ScrapperResponse(true, null);
-
         }
-
-
     }
     private void start(long startTime){
         isIndexingOn =true;
@@ -91,7 +88,6 @@ public class ScrapperServiceImpl implements ScrapperService{
         if(forkJoinPool.isQuiescent()){
             return new ScrapperResponse(false, Error.INDEXING_HAS_NOT_BEEN_STARTED_YET);
         }
-
         try {
             isIndexingOn=false;
             forkJoinPool.shutdownNow();
@@ -102,10 +98,8 @@ public class ScrapperServiceImpl implements ScrapperService{
         } finally {
             forkJoinPool.shutdownNow();
             forkJoinPool = new ForkJoinPool();
-
         }
         dbService.setFailedAfterCancellation(sites.getSites());
-
         return new ScrapperResponse(true,null);
     }
 
