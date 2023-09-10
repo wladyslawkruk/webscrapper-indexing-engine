@@ -1,5 +1,6 @@
 package searchengine.db;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.data.jpa.repository.Query;
 import searchengine.config.Site;
 import searchengine.dto.scrapper.PageResponse;
@@ -11,6 +12,7 @@ import searchengine.model.SiteEntity;
 import searchengine.services.scrapper.TempMapService;
 import searchengine.sitenode.SiteNode;
 
+import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,11 @@ public interface DbService {
     String getLastError(String root);
     LocalDateTime getStatusTime(String root);
     PageEntity getPageEntityByPathAndSiteEntity(String path, SiteEntity se);
+
+    Float getAbsMaxRelevance(List<String> sortedLemmas);
+
+
+
 
 
 

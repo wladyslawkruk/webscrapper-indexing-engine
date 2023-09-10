@@ -5,13 +5,14 @@ spring:
     username: admin
     password: admin
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/postgres}
+
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         hbm2ddl:
           auto: update
-        format_sql: false
+        format_sql: true
         show_sql: false
 
 
@@ -30,8 +31,6 @@ indexing-settings:
 #      name: SMCLINIC
 #    - url: https://oncomos.ru/
 #      name: ONCOMOS
-#    - url: https://www.emcmos.ru/
-#      name: EMC
 #    - url: https://mn-medical.ee/
 #      name: MN_MedicalEE
 #    - url: https://mnmedical.ru/

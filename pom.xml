@@ -95,5 +95,20 @@
             <url>https://gitlab.skillbox.ru/api/v4/projects/263574/packages/maven</url>
         </snapshotRepository>
     </distributionManagement>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>searchengine.Application</mainClass>
+                    <layout>JAR</layout>
+                </configuration>
+            </plugin>
+        </plugins>
+        <finalName>search-app</finalName>
+    </build>
+
+
 
 </project>

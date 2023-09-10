@@ -1,5 +1,6 @@
 package searchengine.db;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import searchengine.config.Site;
@@ -15,7 +16,9 @@ import searchengine.services.scrapper.TempMapService;
 import searchengine.sitenode.SiteNode;
 
 
+import javax.persistence.Query;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -220,6 +223,23 @@ public class DbServiceImpl implements DbService{
     public PageEntity getPageEntityByPathAndSiteEntity(String path, SiteEntity se) {
         return pageRepository.getPageEntityByPathAndSiteEntity(path,se);
     }
+
+    @Override
+    public Float getAbsMaxRelevance(List<String> sortedLemmas) {
+        String firstElement = sortedLemmas.get(0);
+        StringBuilder query = new StringBuilder();
+        for(String s:sortedLemmas){
+            query.append(appendQuote(s));
+        }
+        query.deleteCharAt(query.length()-1);
+        System.out.println(query.toString());
+        return indexRepository.getAbsMaxRelevance(firstElement,sortedLemmas);
+
+    }
+
+
+
+
     public String appendQuote(String s) {
         return new StringBuilder()
                 .append('\'')

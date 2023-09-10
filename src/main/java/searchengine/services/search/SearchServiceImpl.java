@@ -10,7 +10,12 @@ import searchengine.dto.search.SearchResponse;
 import searchengine.exception.IncorrectQueryException;
 import searchengine.lemma.LemmaFinder;
 import searchengine.model.PageEntity;
+import searchengine.model.PageIdRelevanceTuple;
 import searchengine.model.SiteEntity;
+import searchengine.nativesql.NativeSqlHandler;
+import searchengine.repository.IndexRepository;
+
+import javax.persistence.Tuple;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,10 +24,14 @@ import java.util.stream.Collectors;
 public class SearchServiceImpl implements SearchService{
 
     private final DbService dbService;
+    private final NativeSqlHandler nativeSqlHandler;
+    private final IndexRepository indexRepository;
 
     @Autowired
-    public SearchServiceImpl(DbService dbService) {
+    public SearchServiceImpl(DbService dbService, NativeSqlHandler nativeSqlHandler, IndexRepository indexRepository) {
         this.dbService = dbService;
+        this.nativeSqlHandler = nativeSqlHandler;
+        this.indexRepository = indexRepository;
     }
 
     @Override
@@ -40,37 +49,34 @@ public class SearchServiceImpl implements SearchService{
         Set<String> lemmasFromQuery = null;
         try {
             lemmasFromQuery = LemmaFinder.getInstance().collectLemmas(sq.getQuery()).keySet();  //get lemmas out of user Query
-            Set<String> uniqueLemmasSorted = getSortedMapOfLemmas(lemmasFromQuery).keySet();
-            Map<String,Set<Integer>> lemmaMap = getFilteredPagesByRareLemma(uniqueLemmasSorted,siteId);//карта лемма-списки со страницами
-            Set<Integer> pageIdFiltered = getDemandedPagesSet(lemmaMap);
-            Map<Integer, Float> relevantPages = getPagesWithRelevance(pageIdFiltered,uniqueLemmasSorted);
-            List<DataResponse> dataResponses = getDataResponses(relevantPages, se, uniqueLemmasSorted, sq.getOffset(), sq.getLimit())
+            List<String> uniqueLemmasSorted = getSortedMapOfLemmas(lemmasFromQuery).keySet().stream().toList();
+            for(String s:uniqueLemmasSorted){
+                System.out.println(s);
+            }
+            Float maxAbsRank = dbService.getAbsMaxRelevance(uniqueLemmasSorted);
+            System.out.println(maxAbsRank);
+            List<Tuple> res = indexRepository.getMapOfRelevantPagesWithRanks(uniqueLemmasSorted,maxAbsRank,uniqueLemmasSorted.get(0));
+            System.out.println(res.size());
+            Map<Integer, Float> relevantePagesAndRanks = res.stream().collect(Collectors.toMap(
+                            tuple -> ((Number) tuple.get("page_id")).intValue(),
+                            tuple -> ((Number) tuple.get("relative_rank")).floatValue())).entrySet().stream()
+                    .sorted(Map.Entry.<Integer, Float>comparingByValue().reversed())
+                    .collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    Map.Entry::getValue,
+                    (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+            List<DataResponse> dataResponses = getDataResponses(relevantePagesAndRanks, se, uniqueLemmasSorted, sq.getOffset(), sq.getLimit())
                     .stream()
                     .sorted(DataResponse::compareByRelevance).toList();
             searchResponse.setResult(true);
-            searchResponse.setCount(relevantPages.size());
+            searchResponse.setCount(relevantePagesAndRanks.size());
             searchResponse.setDataResponse(dataResponses.toArray(new DataResponse[0]));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return searchResponse;
     }
-    private Map<Integer, Float> getPagesWithRelevance(Set<Integer> idPagesFiltered, Set<String> sortedSetLemmas) {
-        Map<Integer, Float> relevanceAbsolutPages = new HashMap<>();
-        float maxRelevance = 0f;
-        for(Integer i:idPagesFiltered){
-            float pageRank = 0f;
-            for(String s:sortedSetLemmas){
-                pageRank+=dbService.getRankOfLemmaByWordAndPage(s,i)==null?0:dbService.getRankOfLemmaByWordAndPage(s,i);
-            }
-            relevanceAbsolutPages.put(i,pageRank);
-            maxRelevance = pageRank > maxRelevance ? pageRank : maxRelevance;
-        }
-        float finalMaxRelevance = maxRelevance;
-        return relevanceAbsolutPages.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue() / finalMaxRelevance, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-    }
+
 
     private Map<String,Integer> getSortedMapOfLemmas (Set<String> queryLemmas){
         Map<String,Integer> result = new HashMap<>();
@@ -85,29 +91,8 @@ public class SearchServiceImpl implements SearchService{
                         (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
     }
-    private Map<String,Set<Integer>> getFilteredPagesByRareLemma(Set<String> sortedSet, int siteId) {
-        Map<String,Set<Integer>> result = new HashMap<>();
-        Set<Integer> pagesIdFiltered= new HashSet<>();
-        Set<Integer> temp = new HashSet<>();
-        int count = 0;
-        for (String lemma : sortedSet) {
-            if(count==0){
-                count++;
-                Set<Integer> pagesForLemma = dbService.findPagesForLemma(lemma, siteId);
-                temp = pagesForLemma;
-                result.put(lemma,pagesForLemma);
-            }
-            else{
-                pagesIdFiltered = dbService.findPagesForLemma(lemma,siteId);
-                pagesIdFiltered.retainAll(temp);
-                result.put(lemma,pagesIdFiltered);
-                temp = pagesIdFiltered;
-            }
-        }
-        return result;
-    }
     private List<DataResponse> getDataResponses(Map<Integer, Float> relevanceAbsolutPages,
-                                                SiteEntity site, Set<String> sortedSetLemmas, int offset, int limit) {
+                                                SiteEntity site, List<String> sortedSetLemmas, int offset, int limit) {
         List<DataResponse> responseList = new ArrayList<>();
         int count = -1;
         for (Map.Entry element : relevanceAbsolutPages.entrySet()) {
@@ -137,15 +122,7 @@ public class SearchServiceImpl implements SearchService{
         return responseList;
     }
 
-    private Set<Integer> getDemandedPagesSet(Map<String,Set<Integer>> result){
-        Set<Integer> resultSet = new HashSet<>();
-        for(Set<Integer> pages : result.values()){
-            resultSet.addAll(pages);
-        }
-        return resultSet;
-    }
-
-    public String getSnippet(String text, Set<String> lemmaSet) {
+    public String getSnippet(String text, List<String> lemmaSet) {
         if (lemmaSet.size() == 0){
             return null;
         }

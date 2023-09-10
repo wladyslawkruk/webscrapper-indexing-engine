@@ -6,10 +6,7 @@ import org.thymeleaf.expression.Sets;
 import searchengine.lemma.LemmaFinder;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,8 +25,8 @@ public class Test {
 //        }
 //        System.out.println(lemmaMap.size());
 //        System.out.println(lemmas);
-        Set<String> newSet = Stream.of("оснащение","установка","онкология","лучевой","терапия")
-                .collect(Collectors.toCollection(HashSet::new));
+
+        List<String> newSet = Stream.of("оснащение","установка","онкология","лучевой","терапия").toList();
         StringBuilder query = new StringBuilder();
         for(String s:newSet){
             query.append(appendQuote(s));
