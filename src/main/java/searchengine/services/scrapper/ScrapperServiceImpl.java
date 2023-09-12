@@ -80,7 +80,7 @@ public class ScrapperServiceImpl implements ScrapperService{
         });
         System.out.println((System.currentTimeMillis()-startTime)/1000+ " seconds");
         System.out.println("Scan finished!");
-        isIndexingOn=false;
+        isIndexingOn = false;
     }
 
     @Override
@@ -89,9 +89,10 @@ public class ScrapperServiceImpl implements ScrapperService{
             return new ScrapperResponse(false, Error.INDEXING_HAS_NOT_BEEN_STARTED_YET);
         }
         try {
-            isIndexingOn=false;
+            isIndexingOn = false;
             forkJoinPool.shutdownNow();
             forkJoinPool.awaitTermination(1, TimeUnit.SECONDS);
+
         } catch (InterruptedException e) {
             System.out.println(e.getStackTrace());
 
@@ -114,7 +115,7 @@ public class ScrapperServiceImpl implements ScrapperService{
         SiteResponse siteResponse =connectionHandler.getSiteDoc(url.toString());
         Document document = siteResponse.getDocument();
         SiteEntity siteEntity = new SiteEntity();       //created a new Site Instance
-        if(document==null){
+        if(document == null){
             siteEntity.setStatus(SiteStatus.FAILED);
             siteEntity.setLastError(siteResponse.getException().getMessage() + " -> " + "caused by IO exception");
             siteEntity.setName(name);
@@ -128,10 +129,10 @@ public class ScrapperServiceImpl implements ScrapperService{
             siteEntity.setUrl(url.toString());
             siteEntity.setStatusTime(LocalDateTime.now());
             dbService.saveToSiteDb(siteEntity);
-            SiteNode root = new SiteNode(url.toString());    //created root sitenode
+            SiteNode rootNode = new SiteNode(url.toString());    //created root sitenode
             TempMapService tempMap = new TempMapService(dbService);
-            SiteNodeRecursiveAction snra = new SiteNodeRecursiveAction(root,siteNodeHandler,tempMap);
-            forkJoinPool.invoke(snra);
+            SiteNodeRecursiveAction action = new SiteNodeRecursiveAction(rootNode,siteNodeHandler,tempMap);
+            forkJoinPool.invoke(action);
             tempMap.writeMapDownToDb(siteEntity);
             tempMap.writeMapDownToIndexDb();
             dbService.setSiteStatusIndexed(url.toString());

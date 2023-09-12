@@ -37,20 +37,20 @@ public class SearchServiceImpl implements SearchService{
     @Override
     public SearchResponse search(SearchRequest sq) throws IncorrectQueryException {
         SearchResponse searchResponse = new SearchResponse();
-        SiteEntity se = null;
-        if(sq.getSite()!=null){
+        SiteEntity siteEntity = null;
+        if(sq.getSite() != null){
             if(dbService.getSiteEntityByRootUrl(sq.getSite()).isEmpty()){
                 return new SearchResponse(false,"Nie przeprowadzono indeksacji tej strony webowej");
             }
-            se = dbService.getSiteEntityByRootUrl(sq.getSite()).get();
+            siteEntity = dbService.getSiteEntityByRootUrl(sq.getSite()).get();
         }
-        Integer siteId = se==null?0:se.getSiteId();
+        Integer siteId = siteEntity == null ? 0 : siteEntity.getSiteId();
         System.out.println(siteId);
         Set<String> lemmasFromQuery = null;
         try {
             lemmasFromQuery = LemmaFinder.getInstance().collectLemmas(sq.getQuery()).keySet();  //get lemmas out of user Query
             List<String> uniqueLemmasSorted = getSortedMapOfLemmas(lemmasFromQuery).keySet().stream().toList();
-            for(String s:uniqueLemmasSorted){
+            for(String s : uniqueLemmasSorted){
                 System.out.println(s);
             }
             Float maxAbsRank = dbService.getAbsMaxRelevance(uniqueLemmasSorted);
@@ -65,7 +65,7 @@ public class SearchServiceImpl implements SearchService{
                     Map.Entry::getKey,
                     Map.Entry::getValue,
                     (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-            List<DataResponse> dataResponses = getDataResponses(relevantePagesAndRanks, se, uniqueLemmasSorted, sq.getOffset(), sq.getLimit())
+            List<DataResponse> dataResponses = getDataResponses(relevantePagesAndRanks, siteEntity, uniqueLemmasSorted, sq.getOffset(), sq.getLimit())
                     .stream()
                     .sorted(DataResponse::compareByRelevance).toList();
             searchResponse.setResult(true);
@@ -80,7 +80,7 @@ public class SearchServiceImpl implements SearchService{
 
     private Map<String,Integer> getSortedMapOfLemmas (Set<String> queryLemmas){
         Map<String,Integer> result = new HashMap<>();
-        for(String s:queryLemmas){
+        for(String s: queryLemmas){
             if(dbService.totalFrequencyOfLemma(s)!=null){
                 result.put(s,dbService.totalFrequencyOfLemma(s));
             }
@@ -136,7 +136,7 @@ public class SearchServiceImpl implements SearchService{
             for (String word : lemmaSet) {
                 String word1 = word.length() < 2? word : word.substring(0, word.length() - 2);
                 cutWords.add(word1);
-                int number = StringUtils.indexOfIgnoreCase(input, word1, startSearch);
+                int number = StringUtils.indexOfIgnoreCase(input, word1, startSearch);  //index of first occurrence in text
                 if (number != -1) {
                     numberFirstWord = numberFirstWord < number ? numberFirstWord : number;
                 }
@@ -145,12 +145,11 @@ public class SearchServiceImpl implements SearchService{
                 break;
             }
             int stop = input.indexOf("<", numberFirstWord);
-            int stopCustom = numberFirstWord + 700;
+            int stopCustom = numberFirstWord + 400;
             stop = stop == -1?
                     (Math.min(stopCustom, input.length()))
                     : (Math.min(stop, (stopCustom)));
             String result = input.substring(numberFirstWord, stop);
-
             for (String word : cutWords) {
                 countMatchesSearchWords += StringUtils.countMatches(result, word);
                 result = result.replaceAll(word,"<b>" + word + "</b>");
